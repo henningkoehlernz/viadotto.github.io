@@ -38,6 +38,7 @@ For this reason, constraint discovery will *always* operate on these samples.
 For tables with few rows, all rows will be included in the sample.
 For larger tables the *number* of rows sampled increases with the table size, but the *fraction* of rows sampled becomes smaller as the table grows.
 Although sampling will inevitably result in some inaccuracies for the measures computed, sampling rates are chosen to ensure that these inaccuracies remain small.
+
 It is possible to force all rows to be included in a sample -- doing so will avoid inaccuracies, but at the cost of reduced speed and increased memory usage.
 
 ## Mining keys
@@ -47,18 +48,26 @@ Our tool currently supports two profiling operations for keys:
 - **Key Discovery**: Find all minimal column sets that form a key for a given table.
 - **Key Analysis**: Compute uniqueness metrics for a given column set.
 
+For key discovery, we note that just because a constraint happens to hold for a table does not guarantee that it is meaningful.
+In practice, many of the key constraints discovered will be accidental, meaning they hold only by chance -- this is particularly true for tables with few rows.
+
+Thus the set of minimal keys returned is best seen as a starting point for further manual evaluation by a domain expert.
+Key analysis for selected column sets can be helpful in this.
+
 ### Incomplete Data
 
 Currently the only supported semantic for dealing with null values is *possible semantic*, corresponding to UNIQUE constraints in SQL.
 Here a column set **K** is a key if no two rows have the same values on **K**, unless one of these values is null.
 Thus the column set { Name, DoB } is a key for the table below, but { Name, Salary } is not.
 
-| Name  |   DoB    | Salary |
-| ----- | -------- | ------ |
-| John  | 01/03/85 | 80k    |
-| John  |          | 80k    |
-| Susan | 01/03/85 |        |
-| Dave  | 06/06/91 | 75k    |
+| Name  | DoB      | Salary | Job       |
+| ----- | -------- | ------ | --------- |
+| John  | 01/03/85 | 90k    | Developer |
+| John  |          | 90k    | Analyst   |
+| Susan | 01/03/85 |        |           |
+| Dave  | 06/06/91 | 75k    | Tester    |
+
+Note that { DoB, Salary } and { Job } are also keys for the given table, though likely accidental.
 
 ### Dirty Data
 
