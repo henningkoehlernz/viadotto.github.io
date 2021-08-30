@@ -1,2 +1,4 @@
-theme: jekyll-theme-midnight
+#theme: jekyll-theme-midnight
+theme: jekyll-theme-hacker
 title: Data Viadotto API tutorial
+description: A brief introduction to the Data Viadotto API for data profiling.
