@@ -9,7 +9,11 @@ Rather than focusing on request details, it aims to provide an overview about se
 The Data Viadotto API provides tools for discovering key and foreign key constraints by analysing relationships between data values.
 This is in contrast to more basic data visualization tools, which simply visualize constraints explicitly defined.
 It can thus be employed in cases where constraints are not fully known, or not known at all.
-A common use case is ER schema reconstruction, but it can help with more general data exploration tasks such as data lake traversal as well.
+Some common use cases are:
+
+- schema reverse engineering
+- data lake traversal
+- data integration
 
 Inputs are currently limited to relational data, but a variety of storage formats such as relational databases or CSV files are supported.
 
@@ -27,6 +31,9 @@ When constraints aren't actively enforced, they tend to get violated over time.
 Thus it becomes important to search for constraints that *almost* hold.
 Our profiling tool uses multiple metrics to measure the degree of constraint satisfaction, which can be used for filtering.
 The optimal parameters to use here vary between data sets, and typically require some experimentation to find.
+
+We note that data can be dirty in a variety of ways (e.g. inconsistent, outdated, or simply wrong).
+For constraint discovery, only dirtiness that causes data inconsistency matters.
 
 ## Sampling
 
@@ -91,15 +98,32 @@ Our tool currently supports two profiling operations for INDs/FKs:
 As for key discovery, foreign key discovery will return many accidental INDs, so results returned will likely require further evaluation by a domain expert.
 Foreign Key Analysis can help with this.
 
+Note that foreign key discovery also returns non-maximal INDs.
+This is redundant when dealing with exact INDs only.
+However, when data sets are dirty, the degree of satisfaction tends to be greater for non-maximal INDs, which may make them more relevant.
+
 ### Incomplete Data
 
-Three different semantics are supported for deciding how missing values are handled for inclusion dependencies.
+Different semantics are supported for deciding how missing values are handled for inclusion dependencies.
 That is, if a row in the source table is missing a value in one of the columns participating in the IND, then satisfaction of the IND for that row depends on the semantic.
 
 - **Simple Semantics**: The IND is satisfied.
-- **Full Semantics**: The IND is violated.
 - **Partial Semantics**: The IND is satisfied if there exists a row in the target table that matches the row in the source table for every column pair in the IND where the source row has a value.
+- **Full Semantics**: The IND is violated.
 
+FOREIGN KEY constraints in SQL use simple semantics.
+Thus for schema reverse engineering tasks where FOREIGN KEY constraints where previously enforced (but are now unavailable for some reason), simple semantics can be an appropriate choice.
 
+Partial semantics can be a sensible choice for most tasks, as it best captures the intend of an inclusion dependency (references must target existing data) and should be considered the default.
+
+For some datasets, references will always be complete (no missing values).
+Here full semantics is best at eliminating false positives, as it is the most restrictive.
+
+We note that for a column containing only null values, any IND with such a column as source would technically be satisfied under simple and partial semantics.
+However, we exclude such columns from the mining process, as the resulting INDs would not be useful.
+
+#### Example
 
 ### Dirty Data
+
+### Filtering
