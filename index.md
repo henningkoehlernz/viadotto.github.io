@@ -46,18 +46,18 @@ It is possible to force all rows to be included in a sample -- doing so will avo
 Our tool currently supports two profiling operations for keys:
 
 - **Key Discovery**: Find all minimal column sets that form a key for a given table.
-- **Key Analysis**: Compute uniqueness metrics for a given column set.
+- **Key Analysis**: Compute uniqueness metrics for a given column set, and extract data examples.
 
 For key discovery, we note that just because a constraint happens to hold for a table does not guarantee that it is meaningful.
 In practice, many of the key constraints discovered will be accidental, meaning they hold only by chance -- this is particularly true for tables with few rows.
 
-Thus the set of minimal keys returned is best seen as a starting point for further manual evaluation by a domain expert.
+As accidental keys are typically of little interest, the set of minimal keys returned is best seen as a starting point for further manual evaluation by a domain expert.
 Key analysis for selected column sets can be helpful in this.
 
 ### Incomplete Data
 
 Currently the only supported semantic for dealing with null values is *possible semantic*, corresponding to UNIQUE constraints in SQL.
-Here a column set **K** is a key if no two rows have the same values on **K**, unless one of these values is null.
+Here a column set **K** is a key if no two rows violate it, meaning they have the same values on **K**, and none of these values is missing.
 Thus the column set { Name, DoB } is a key for the table below, but { Name, Salary } is not.
 
 | Name  | DoB      | Salary | Job       |
@@ -71,8 +71,35 @@ Note that { DoB, Salary } and { Job } are also keys for the given table, though 
 
 ### Dirty Data
 
+Key analysis computes the *uniqueness coefficient* of the provided column set.
+This is the fraction of tuples which do not violate the key constraint (together with some other tuple).
+E.g. for the table above, the uniqueness coefficient of { Name } is 0.5, while that of { Name, DoB } is 1.
+
+Generally, uniqueness coefficients close to 1 indicate that the column set might be a key, with a few dirty data values causing it to be violated.
+For low uniqueness coefficients this is unlikely.
+
 ## Mining foreign keys
 
+Rather than just focusing on foreign keys, our tool searches for *inclusion dependencies* (INDs), meaning that the column set referenced does not have to be a key.
+However, as foreign keys are the most common type of IND, we provide options for filtering out INDs where the referenced column set is not a key.
+
+Our tool currently supports two profiling operations for INDs/FKs:
+
+- **Foreign Key Discovery**: Given a set of tables, identify INDs / FKs between them.
+- **Foreign Key Analysis**: Compute metrics for a given IND, and extract data examples.
+
+As for key discovery, foreign key discovery will return many accidental INDs, so results returned will likely require further evaluation by a domain expert.
+Foreign Key Analysis can help with this.
+
 ### Incomplete Data
+
+Three different semantics are supported for deciding how missing values are handled for inclusion dependencies.
+That is, if a row in the source table is missing a value in one of the columns participating in the IND, then satisfaction of the IND for that row depends on the semantic.
+
+- **Simple Semantics**: The IND is satisfied.
+- **Full Semantics**: The IND is violated.
+- **Partial Semantics**: The IND is satisfied if there exists a row in the target table that matches the row in the source table for every column pair in the IND where the source row has a value.
+
+
 
 ### Dirty Data
