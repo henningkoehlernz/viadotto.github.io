@@ -116,13 +116,43 @@ Thus for schema reverse engineering tasks where FOREIGN KEY constraints where pr
 
 Partial semantics can be a sensible choice for most tasks, as it best captures the intend of an inclusion dependency (references must target existing data) and should be considered the default.
 
-For some datasets, references will always be complete (no missing values).
+For some datasets, references will almost always be complete (no missing values).
 Here full semantics is best at eliminating false positives, as it is the most restrictive.
 
 We note that for a column containing only null values, any IND with such a column as source would technically be satisfied under simple and partial semantics.
 However, we exclude such columns from the mining process, as the resulting INDs would not be useful.
 
 #### Example
+
+Consider the following two tables, Orders and Accounts:
+
+<table><tr><td>
+
+<table>
+<tr><th>OrderID</th><th>Customer</th><th>Company</th></tr>
+<tr><td>1</td><td>Darrel</td><td>Bugs-R-Us</td></tr>
+<tr><td>2</td><td>Susan</td><td></td></tr>
+<tr><td>3</td><td>Edward</td><td></td></tr>
+<tr><td>4</td><td>Jenny</td><td></td></tr>
+<tr><td>5</td><td>Tom</td><td>EazyCode</td></tr>
+</table>
+
+</td><td>
+
+<table>
+<tr><th>Name</th><th>Company</th><th>AccountNr</th></tr>
+<tr><td>Darrel</td><td>Bugs-R-Us</td><td>99-666-00</td></tr>
+<tr><td>Susan</td><td></td><td>71-922-88</td></tr>
+<tr><td>Edward</td><td>Bugs-R-Us</td><td>99-666-00</td></tr>
+<tr><td>Darrel</td><td>EazyCode</td><td>12-345-67</td></tr>
+<tr><td>Tom</td><td></td><td>57-902-46</td></tr>
+</table>
+
+</td></tr></table>
+
+The inclusion dependency Orders[Customer,Company] &sube; Accounts[Name,Company] is satisfied for the first order under all semantics.
+Orders 2 and 3 satisfy it under simple and partial semantics, but not under full semantics.
+Order 4 satisfies it under simple semantics only, while order 5 violates it under all semantics.
 
 ### Dirty Data
 
