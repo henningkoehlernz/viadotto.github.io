@@ -156,4 +156,16 @@ Order 4 satisfies it under simple semantics only, while order 5 violates it unde
 
 ### Dirty Data
 
+The *inclusion coefficient* of an IND measures the degree to which a dataset satisfies it.
+It is computed as the fraction of rows in the source table that satisfy the IND.
+As satisfaction depends on the choice of semantics, we obtain multiple inclusion coefficients, one per semantic.
+E.g. for the example above, the inclusion coefficient for Orders[Customer,Company] &sube; Accounts[Name,Company] is 0.8 under simple semantics, 0.6 under partial semantics, and 0.2 under full semantics.
+
+During Foreign Key Discovery and Analysis, inclusion coefficients (ICs) are computed w.r.t. all three semantics.
+E.g. for the table above, Foreign Key Discovery will find
+
+- Orders[Customer] &sube; Accounts[Name] with ICs of 0.8, 0,8 and 0.8
+- Orders[Company] &sube; Accounts[Company] with ICs of 1.0, 1.0 and 0.4
+- Orders[Customer,Company] &sube; Accounts[Name,Company] with ICs of 0.8, 0.6 and 0.2
+
 ### Filtering
