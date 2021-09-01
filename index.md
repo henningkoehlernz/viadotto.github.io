@@ -161,11 +161,30 @@ It is computed as the fraction of rows in the source table that satisfy the IND.
 As satisfaction depends on the choice of semantics, we obtain multiple inclusion coefficients, one per semantic.
 E.g. for the example above, the inclusion coefficient for Orders[Customer,Company] &sube; Accounts[Name,Company] is 0.8 under simple semantics, 0.6 under partial semantics, and 0.2 under full semantics.
 
-During Foreign Key Discovery and Analysis, inclusion coefficients (ICs) are computed w.r.t. all three semantics.
-E.g. for the table above, Foreign Key Discovery will find
+During foreign key discovery and analysis, inclusion coefficients (ICs) are computed w.r.t. all three semantics.
+E.g. for the table above, foreign key discovery will find
 
 - Orders[Customer] &sube; Accounts[Name] with ICs of 0.8, 0,8 and 0.8
 - Orders[Company] &sube; Accounts[Company] with ICs of 1.0, 1.0 and 0.4
 - Orders[Customer,Company] &sube; Accounts[Name,Company] with ICs of 0.8, 0.6 and 0.2
 
 ### Filtering
+
+Without restrictions, foreign key discovery is likely to return an overwhelming number of false positives -- INDs with non-zero inclusion coefficients that aren't meaningful -- as the number of potential INDs grows exponentially in the number of columns.
+This can also result in timeouts or memory overflows, even for small datasets.
+Columns with small integer values are particularly prone to this, as they are likely to have at least some values in common.
+
+To avoid this, INDs must be filtered.
+The most obvious way to do this is by defining thresholds for the different inclusions coefficients, so that only INDs whose inclusion coefficients meet or exceed these thresholds are returned.
+Thresholds for partial and full semantics are used for pruning during the discovery process, while the threshold for simple semantics is only applied afterwards.
+Thus higher thresholds for partial and full semantics will speed up the discovery process, while a higher threshold for simple semantics will not.
+
+Resemblance ...
+
+## Common Workflows
+
+Mine Keys -> Curate -> Mine FKs
+
+Mine with low thresholds -> explore -> tighten thresholds
+
+Mine with high thresholds -> loosen thresholds -> explore -> tighten thresholds
