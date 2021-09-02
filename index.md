@@ -190,11 +190,35 @@ This is particularly helpful for eliminating false positives between ID columns 
 However, as meaningful INDs may have low resemblance (e.g. Managers referencing Persons), this must be used with care.
 It can be sensible to set only low resemblance thresholds, and use resemblance mainly to guide manual evaluation.
 
+We note that fitering by resemblance is done after mining, so the resemblance threshold has no significant impact on processing speed.
 
 ## Common Workflows
 
-Mine Keys -> Curate -> Mine FKs
+While workflows for data profiling will depend on how data sets are being processed, some sequences of steps arise frequently.
+We list some of these below.
+It is assumed that data sets have already been sampled, as this is required for all further processing.
 
-Mine with low thresholds -> explore -> tighten thresholds
+### mine keys -> curate -> mine foreign keys
 
-Mine with high thresholds -> loosen thresholds -> explore -> tighten thresholds
+Mining foreign keys directly can result in long processing times and large numbers of false positives.
+By specifying a set of target keys for each table (possibly empty), we can address both of these issues.
+We can obtain these target keys by first mining for keys, then manually curating the keys found.
+If keys are of interest, this may be necessary anyway.
+Note that this will restrict inclusion dependencies found to foreign keys, which may not always be desirable.
+
+### mine with low thresholds -> explore -> tighten thresholds
+
+By specifying the right thresholds for a data set during mining, one can strike a good balance between meaningful constraints found, false positives elminiated, and processing time.
+However, which thresholds are the "right" ones varies between data sets, and tasks performed.
+It thus becomes necessary to develop some intuition which thresholds work for filtering out unwanted constraints.
+
+We do this by first mining with low thresholds, to ensure meaningful constraints aren't missed.
+Once a better understanding has been obtained by examining the constraints discovered, thresholds can be tightened.
+Note that tightening of thresholds can be done by filtering locally, i.e., the mining algorithm does not need to be invoked again.
+
+### mine with high thresholds -> loosen thresholds -> explore -> tighten thresholds
+
+This extention of the previous workflow becomes necessary if mining with low thresholds turns out to be too expensive, resulting in timeouts or memory overflows.
+Here we start with high thresholds to ensure we get some results quickly, then loosen them gradually, until a good balance between capturing meaningful constraints and processing time is reached.
+Note that this will require the mining process to be invoked again.
+Afterwards we proceed as before, exploring constraints discovered and tightening thresholds to eliminate false positives.
