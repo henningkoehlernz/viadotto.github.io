@@ -1,7 +1,9 @@
 ---
 title: Key/FK Mining
+links: <a href="#overview">overview</a> <a href="#sampling">sampling</a> <a href="#keys">keys</a> <a href="#foreign-keys">foreign keys</a> <a href="#workflows">workflows</a>
 ---
-## Overview
+
+## Overview {#overview}
 
 This tutorial provides a brief introduction to the Data Viadotto profiling API.
 Rather than focusing on request details, it aims to provide an overview about services provided, and typical workflows.
@@ -35,7 +37,7 @@ The optimal parameters to use here vary between data sets, and typically require
 We note that data can be dirty in a variety of ways (e.g. inconsistent, outdated, or simply wrong).
 For constraint discovery, only dirtiness that causes data inconsistency matters.
 
-## Sampling
+## Sampling {#sampling}
 
 The first step in profiling a data set is sampling, where a suitable subset of rows is selected from each table.
 The main purpose of this step is to speed up constraint discovery.
@@ -48,7 +50,7 @@ Although sampling will inevitably result in some inaccuracies for the measures c
 
 It is possible to force all rows to be included in a sample -- doing so will avoid inaccuracies, but at the cost of reduced speed and increased memory usage.
 
-## Mining keys
+## Mining keys {#keys}
 
 Our tool currently supports two profiling operations for keys:
 
@@ -85,7 +87,7 @@ E.g. for the table above, the uniqueness coefficient of { Name } is 0.5, while t
 Generally, uniqueness coefficients close to 1 indicate that the column set might be a key, with a few dirty data values causing it to be violated.
 For low uniqueness coefficients this is unlikely.
 
-## Mining foreign keys
+## Mining foreign keys {#foreign-keys}
 
 Rather than just focusing on foreign keys, our tool searches for *inclusion dependencies* (INDs), meaning that the column set referenced does not have to be a key.
 However, as foreign keys are the most common type of IND, we provide options for filtering out INDs where the referenced column set is not a key.
@@ -121,8 +123,6 @@ Here full semantics is best at eliminating false positives, as it is the most re
 
 We note that for a column containing only null values, any IND with such a column as source would technically be satisfied under simple and partial semantics.
 However, we exclude such columns from the mining process, as the resulting INDs would not be useful.
-
-#### Example
 
 Consider the following two tables, Orders and Accounts:
 
@@ -192,7 +192,7 @@ It can be sensible to set only low resemblance thresholds, and use resemblance m
 
 We note that fitering by resemblance is done after mining, so the resemblance threshold has no significant impact on processing speed.
 
-## Common Workflows
+## Common Workflows {#workflows}
 
 While workflows for data profiling will depend on how data sets are being processed, some sequences of steps arise frequently.
 We list some of these below.

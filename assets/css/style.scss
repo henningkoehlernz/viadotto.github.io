@@ -1,0 +1,16 @@
+---
+---
+@import "{{ site.theme }}";
+// stop header from moving
+header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background-color: #1A1A1A;
+  padding: 10px;
+}
+// ensure tag references are shown below header
+h2 {
+  margin-top: -100px;
+  padding-top: 100px;
+}
