@@ -65,7 +65,11 @@ Key analysis for selected column sets can be helpful in this.
 
 ### Incomplete Data
 
-Currently the only supported semantic for dealing with null values is *possible semantic*, corresponding to UNIQUE constraints in SQL.
+There are different approaches for dealing with null values.
+Conceptually we consider *possible worlds*, where missing values are replaced with arbitrary values.
+Depending on whether we require a key constraint to be satisfied by all possible worlds only some, we obtain different semantics.
+
+The default is *possible semantic*, corresponding to UNIQUE constraints in SQL.
 Here a column set **K** is a key if no two rows violate it, meaning they have the same values on **K**, and none of these values is missing.
 Thus the column set { Name, DoB } is a key for the table below, but { Name, Salary } is not.
 
@@ -78,14 +82,23 @@ Thus the column set { Name, DoB } is a key for the table below, but { Name, Sala
 
 Note that { DoB, Salary } and { Job } are also keys for the given table, though likely accidental.
 
+Under *certain semantic* each pair of rows must strongly disagree on at least one key column, meaning values are present and different.
+For the table above, { Name, Job } is the only minimal key.
+
 ### Dirty Data
 
 Key analysis computes the *uniqueness coefficient* of the provided column set.
 This is the fraction of tuples which do not violate the key constraint (together with some other tuple).
-E.g. for the table above, the uniqueness coefficient of { Name } is 0.5, while that of { Name, DoB } is 1.
+E.g. for the table above, the uniqueness coefficient of { Name } is 0.5.
 
 Generally, uniqueness coefficients close to 1 indicate that the column set might be a key, with a few dirty data values causing it to be violated.
 For low uniqueness coefficients this is unlikely.
+
+For incomplete data we compute the minimum and maximum uniqueness coefficient amongst all possible worlds.
+E.g. for the table above, the uniqueness coefficient of { Name, DoB } varies between 0.5 and 1.
+Keys under possible semantic have a maximum uniqueness coefficient of 1, while keys under certain semantic have a minimum uniqueness coefficient of 1.
+
+*Note: Computation of minimum uniqueness coefficients has not been implemented yet.*
 
 ## Mining foreign keys {#foreign-keys}
 
