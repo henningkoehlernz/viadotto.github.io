@@ -127,9 +127,9 @@ That is, if a row in the source table is missing a value in one of the columns p
 - **Full Semantics**: The IND is violated.
 
 FOREIGN KEY constraints in SQL use simple semantics.
-Thus for schema reverse engineering tasks where FOREIGN KEY constraints where previously enforced (but are now unavailable for some reason), simple semantics can be an appropriate choice.
+Thus for schema reverse engineering tasks where FOREIGN KEY constraints were previously enforced (but are now unavailable for some reason), simple semantics can be an appropriate choice.
 
-Partial semantics can be a sensible choice for most tasks, as it best captures the intend of an inclusion dependency (references must target existing data) and should be considered the default.
+Partial semantics can be a sensible choice for most tasks, as it best captures the intent of an inclusion dependency (references must target existing data) and should be considered the default.
 
 For some datasets, references will almost always be complete (no missing values).
 Here full semantics is best at eliminating false positives, as it is the most restrictive.
