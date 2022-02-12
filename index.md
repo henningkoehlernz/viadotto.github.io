@@ -192,6 +192,7 @@ The most obvious way to do this is by defining thresholds for the different incl
 Thresholds for partial and full semantics are used for pruning during the discovery process, while the threshold for simple semantics is only applied afterwards.
 Thus higher thresholds for partial and full semantics will speed up the discovery process, while a higher threshold for simple semantics will not.
 
+{% comment %}
 While an inclusion dependency only requires that the set of values in the source columns forms a subset of those in the target columns, in many cases they will actually be identical.
 E.g. if every order contains at least one item, then the set of OrderID values in the OrderItems will be identical to those in the Order table.
 To measure how similar the sets of source and target values are, we employ the *resemblance* measure, defined as the fraction of values common to both sets:
@@ -204,6 +205,14 @@ However, as meaningful INDs may have low resemblance (e.g. Managers referencing 
 It can be sensible to set only low resemblance thresholds, and use resemblance mainly to guide manual evaluation.
 
 We note that fitering by resemblance is done after mining, so the resemblance threshold has no significant impact on processing speed.
+{% endcomment %}
+
+While an inclusion dependency does not require all values in the target columns to be referenced, in practice they often are.
+E.g. if every order contains at least one item, then every OrderID value will be referenced by an OrderItem.
+The *coverage* measure describes the fraction of rows in the target table that are complete on the target columns and referenced by one or more rows in the source table.
+Filtering INDs by coverage is particularly helpful for eliminating false positives between ID columns which had values auto-populated from 1 to n, leading to accidental INDs with high inclusion coefficients.
+However, as meaningful INDs may have low coverage (e.g. Managers referencing Persons), this must be used with care.
+It can be sensible to set only low coverage thresholds, and use coverage mainly to guide manual evaluation.
 
 ## Common Workflows {#workflows}
 
