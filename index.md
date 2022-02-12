@@ -207,7 +207,7 @@ It can be sensible to set only low resemblance thresholds, and use resemblance m
 We note that fitering by resemblance is done after mining, so the resemblance threshold has no significant impact on processing speed.
 {% endcomment %}
 
-While an inclusion dependency does not require all values in the target columns to be referenced, in practice they often are.
+While an inclusion dependency does not require all rows in the target table to be referenced, in practice they often are.
 E.g. if every order contains at least one item, then every OrderID value will be referenced by an OrderItem.
 The *coverage* measure describes the fraction of rows in the target table that are complete on the target columns and referenced by one or more rows in the source table.
 Filtering INDs by coverage is particularly helpful for eliminating false positives between ID columns which had values auto-populated from 1 to n, leading to accidental INDs with high inclusion coefficients.
