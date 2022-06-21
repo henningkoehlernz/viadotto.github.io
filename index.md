@@ -67,7 +67,7 @@ Key analysis for selected column sets can be helpful in this.
 
 There are different approaches for dealing with null values.
 Conceptually we consider *possible worlds*, where missing values are replaced with arbitrary values.
-Depending on whether we require a key constraint to be satisfied by all possible worlds only some, we obtain different semantics.
+Depending on whether we require a key constraint to be satisfied by all possible worlds or only some, we obtain different semantics.
 
 The default is *possible semantic*, corresponding to UNIQUE constraints in SQL.
 Here a column set **K** is a key if no two rows violate it, meaning they have the same values on **K**, and none of these values is missing.
