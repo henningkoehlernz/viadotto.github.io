@@ -209,7 +209,7 @@ We note that fitering by resemblance is done after mining, so the resemblance th
 
 While an inclusion dependency does not require all rows in the target table to be referenced, in practice they often are.
 E.g. if every order contains at least one item, then every OrderID value will be referenced by an OrderItem.
-The *coverage* measure describes the fraction of rows in the target table that are complete on the target columns and referenced by one or more rows in the source table.
+The *coverage* measure describes the fraction of rows in the target table that are referenced by one or more rows in the source table under full semantics.
 Filtering INDs by coverage is particularly helpful for eliminating false positives between ID columns which had values auto-populated from 1 to n, leading to accidental INDs with high inclusion coefficients.
 However, as meaningful INDs may have low coverage (e.g. Managers referencing Persons), this must be used with care.
 It can be sensible to set only low coverage thresholds, and use coverage mainly to guide manual evaluation.
